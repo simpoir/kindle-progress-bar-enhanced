@@ -1,4 +1,12 @@
-# Progress Bar remover for eInk Kindles
+# Progress Bar enhanced for eInk Kindles
+
+This is a fork of the progress bar remover to actually figure out reading speed
+and hopefully display it while reading.
+
+Thanks to muness for the boilerplate code to get this going!
+
+See the original documentation below for installation.
+---
 
 Last year, I decided to get an Kindle Keyboard 3G, and I loved it.  The eInk display was much clearer than my previous LCD devices, I could read outside and the battery life was amazing.  However, I was surprised that there was no way to disable the progress bar.  Not having a progress bar on every page was something I got used to on my previous eReader, a [NookColor running CyanogenMod](http://forum.xda-developers.com/showpost.php?p=11452450&postcount=19).
 

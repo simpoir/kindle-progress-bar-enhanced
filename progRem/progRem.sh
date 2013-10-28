@@ -2,20 +2,22 @@
 
 read cvmPid < /var/run/cvm.pid
 
+caption=
+
 if [[ -z "$cvmPid" ]]; then
   echo "cvm isn't running..."
   exit 2
 fi
 
 if [[ ! -e "/var/run/progRem.pid" ]]; then
-  echo "Hack to remove progress bar starting up" | /mnt/us/progRem/fbout
+  echo "Hack to enhance progress bar starting up" | /mnt/us/progRem/fbout
   echo $$ > "/var/run/progRem.pid"
 else
   exit 1
 fi
 
 clean_up() {
-  echo "Hack to remove progress bar shut down" | /mnt/us/progRem/fbout
+  echo "Hack to enhance progress bar shut down" | /mnt/us/progRem/fbout
   rm /var/run/progRem.pid
   exit
 }
@@ -26,8 +28,7 @@ trap clean_up SIGINT SIGTERM
 eraseProgress() {
   waitForEink
   
-  eips -n 0 38 "                                                  "
-  eips 0 39 "                                                  "
+  eips -n 8 38 "$caption"
 }
 
 ## Check if we need to look for a book/check if current book is open
@@ -76,10 +77,36 @@ waitForEink() {
 
 ## Wait for page turn
 while :; do
-  case "$(waitforkey)" in 
-    191*|109*|104*|193*)
+  keypressed="$(waitforkey)"
+  case "$keypressed" in 
+    193*|109*)
+      # back
       time="$(($(date +%s)-1))"
       bookCheck
+    ;;
+    191*|104*)
+      time="$(($(date +%s)-1))"
+      bookCheck
+      # forward
+
+      tstamps="$(date +%s) $tstamps"
+      new_tstamps=""
+      i=0
+      avg=0
+      for ts in $tstamps; do
+        if test $i -ne 0; then
+          avg=$(( $avg - $ts + $prev ))
+        fi
+        prev=$ts
+        # roll values
+        new_tstamps="$new_tstamps$ts "
+        i=$(( $i+1 ))
+        if test $i -ge 5 ; then break; fi
+      done
+      tstamps=$new_tstamps
+      if test $i -ne 0; then
+        caption="est: $(( ${avg}/${i} / 6 ))min/10pages"
+      fi
     ;;
   esac
 done
